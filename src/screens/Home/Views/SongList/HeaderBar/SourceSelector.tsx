@@ -1,7 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react'
-import { StyleSheet, View, type ViewStyle } from 'react-native'
+import { View, type ViewStyle } from 'react-native'
 
-import { createStyle } from '@/utils/tools'
 import SourceSelector, {
   type SourceSelectorType as _SourceSelectorType,
   type SourceSelectorProps as _SourceSelectorProps,
@@ -32,14 +31,9 @@ export default forwardRef<SourceSelectorType, SourceSelectorProps>(({ style, onS
 
 
   return (
-    <View style={StyleSheet.compose<ViewStyle>(styles.selector, style)}>
+    <View style={style}>
       <SourceSelector ref={sourceSelectorRef} onSourceChange={onSourceChange} center />
     </View>
   )
 })
 
-const styles = createStyle({
-  selector: {
-    // width: 86,
-  },
-})

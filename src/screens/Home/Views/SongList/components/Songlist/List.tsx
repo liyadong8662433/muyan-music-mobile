@@ -14,7 +14,7 @@ import Text from '@/components/common/Text'
 type FlatListType = FlatListProps<ListInfoItem>
 
 // const MAX_WIDTH = scaleSizeW(110)
-const MIN_WIDTH = scaleSizeW(110)
+const MIN_WIDTH = scaleSizeW(80)
 const GAP = scaleSizeW(20)
 
 export interface ListProps {
@@ -114,7 +114,7 @@ export default forwardRef<ListType, ListProps>(({ onRefresh, onLoadMore, onOpenD
   const rowInfo = useMemo(() => {
     let w = width - GAP
     let n = width / (MIN_WIDTH + GAP)
-    if (n > 10) n = 10
+    if (n > 7) n = 7
     let computedItemWidth = Math.floor(w / n)
     const num = Math.max(Math.floor(width / computedItemWidth), 2)
     return {

@@ -23,24 +23,18 @@ export default ({ name, list, onTagChange, activeId }: TagGroupProps) => {
           : null
       }
       <View style={styles.tagTypeList}>
-        {list.map(item => (
-          activeId == item.id
-            ? (
-                <View style={{ ...styles.tagButton, backgroundColor: theme['c-button-background'] }} key={item.id}>
-                  <Text style={styles.tagButtonText} color={theme['c-primary-font-active']}>{item.name}</Text>
-                </View>
-              )
-            : (
-                <Button
-                  style={{ ...styles.tagButton, backgroundColor: theme['c-button-background'] }}
-                  key={item.id}
-                  onPress={() => { onTagChange(item.name, item.id) }}
-                >
-                  <Text style={styles.tagButtonText} color={theme['c-font']} >{item.name}</Text>
-                </Button>
-              )
-
-        ))}
+        {list.map(item => {
+          const isActive = activeId == item.id
+          return (
+            <Button
+              style={{ ...styles.tagButton, backgroundColor: theme['c-button-background'] }}
+              key={item.id}
+              onPress={() => { onTagChange(isActive ? '' : item.name, isActive ? '' : item.id) }}
+            >
+              <Text style={styles.tagButtonText} color={isActive ? theme['c-primary-font-active'] : theme['c-font']}>{item.name}</Text>
+            </Button>
+          )
+        })}
       </View>
     </View>
   )
@@ -48,23 +42,23 @@ export default ({ name, list, onTagChange, activeId }: TagGroupProps) => {
 
 const styles = createStyle({
   tagTypeTitle: {
-    marginTop: 15,
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 6,
   },
   tagTypeList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   tagButton: {
-    // marginRight: 10,
     borderRadius: 4,
-    marginRight: 10,
-    marginBottom: 10,
+    marginRight: 4,
+    marginBottom: 5,
   },
   tagButtonText: {
-    fontSize: 13,
-    paddingLeft: 12,
-    paddingRight: 12,
+    fontSize: 16,
+    fontWeight: '600',
+    paddingLeft: 8,
+    paddingRight: 8,
     paddingTop: 8,
     paddingBottom: 8,
   },

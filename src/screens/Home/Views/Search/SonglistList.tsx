@@ -3,6 +3,8 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { search } from '@/core/search/songlist'
 import Songlist, { type SonglistProps, type SonglistType } from '@/screens/Home/Views/SongList/components/Songlist'
 import searchSonglistState, { type Source } from '@/store/search/songlist/state'
+import { setInlineSonglistDetail } from '@/core/common'
+
 
 // export type MusicListProps = Pick<OnlineListProps,
 // 'onLoadMore'
@@ -18,6 +20,7 @@ export default forwardRef<MusicListType, {}>((props, ref) => {
   const listRef = useRef<SonglistType>(null)
   const searchInfoRef = useRef<{ text: string, source: Source }>({ text: '', source: 'kw' })
   const isUnmountedRef = useRef(false)
+
   useImperativeHandle(ref, () => ({
     async loadList(text, source) {
       // const listDetailInfo = searchSonglistState.listDetailInfo
@@ -56,7 +59,7 @@ export default forwardRef<MusicListType, {}>((props, ref) => {
   const handleRefresh: SonglistProps['onRefresh'] = () => {
     const page = 1
     listRef.current?.setStatus('refreshing')
-    search(searchInfoRef.current.text, page, searchInfoRef.current.source).then((list) => {
+    search(searchInfoRef.current.text, page, searchSonglistState.source).then((list) => {
       // const result = setListInfo(listDetail, searchSonglistState.listDetailInfo.id, page)
       if (isUnmountedRef.current) return
       listRef.current?.setList(list, searchInfoRef.current.source == 'all')
@@ -67,9 +70,9 @@ export default forwardRef<MusicListType, {}>((props, ref) => {
   }
   const handleLoadMore: SonglistProps['onLoadMore'] = () => {
     listRef.current?.setStatus('loading')
-    const info = searchSonglistState.listInfos[searchInfoRef.current.source]!
+    const info = searchSonglistState.listInfos[searchSonglistState.source]!
     const page = info.list.length ? info.page + 1 : 1
-    search(searchInfoRef.current.text, page, searchInfoRef.current.source).then((list) => {
+    search(searchInfoRef.current.text, page, searchSonglistState.source).then((list) => {
       // const result = setListInfo(listDetail, searchSonglistState.listDetailInfo.id, page)
       if (isUnmountedRef.current) return
       listRef.current?.setList(list, searchInfoRef.current.source == 'all')
@@ -79,10 +82,15 @@ export default forwardRef<MusicListType, {}>((props, ref) => {
     })
   }
 
+  const handleOpenDetail: SonglistProps['onOpenDetail'] = (item, index) => {
+    // 横屏模式：在播放组件右侧内嵌显示
+    setInlineSonglistDetail(item)
+  }
+
   return <Songlist
     ref={listRef}
     onRefresh={handleRefresh}
     onLoadMore={handleLoadMore}
+    onOpenDetail={handleOpenDetail}
   />
 })
-

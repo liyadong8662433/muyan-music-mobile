@@ -2,8 +2,8 @@ import { useRef, forwardRef, useImperativeHandle } from 'react'
 import { type ListInfoItem } from '@/store/songlist/state'
 // import LoadingMask, { LoadingMaskType } from '@/components/common/LoadingMask'
 import List, { type ListProps, type ListType, type Status } from './List'
-import { navigations } from '@/navigation'
 import commonState from '@/store/common/state'
+import { setInlineSonglistDetail } from '@/core/common'
 
 export interface SonglistProps {
   onRefresh: ListProps['onRefresh']
@@ -31,7 +31,8 @@ export default forwardRef<SonglistType, SonglistProps>(({
   }))
 
   const handleOpenDetail = (item: ListInfoItem, index: number) => {
-    navigations.pushSonglistDetailScreen(commonState.componentIds.home!, item)
+    // 横屏模式：在播放组件右侧内嵌显示
+    setInlineSonglistDetail(item)
   }
 
   return (

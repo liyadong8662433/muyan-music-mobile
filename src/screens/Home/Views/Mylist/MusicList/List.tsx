@@ -54,8 +54,10 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
   const prevSelectIndexRef = useRef(-1)
   const [selectedList, setSelectedList] = useState<LX.List.ListMusics>([])
   const selectedListRef = useRef<LX.List.ListMusics>([])
+  const [listVersion, setListVersion] = useState(0)
   const currentListIdRef = useRef('')
   const waitJumpListPositionRef = useRef(false)
+  const handleChangeTimerRef = useRef<ReturnType<typeof setTimeout>>()
   const rowInfo = useRef(getRowInfo())
   const isShowAlbumName = useSettingValue('list.isShowAlbumName')
   const isShowInterval = useSettingValue('list.isShowInterval')
@@ -130,15 +132,24 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
         })
       })
     }
+    // 防抖 + 延迟读取：handlePlay 会连续触发两次 overwriteListMusics（先部分后完整）
+    // 在播放状态下 React 可能合并/丢弃中间渲染，导致只显示第一次的部分数据
+    // 解决方案：将 handleChange 改为防抖模式，始终取最新数据
     const handleChange = (ids: string[]) => {
       if (!ids.includes(listState.activeListId)) return
       const id = listState.activeListId
-      void getListMusics(id).then((list) => {
-        if (currentListIdRef.current != id) return
-        selectedListRef.current = []
-        setSelectedList([])
-        setList([...list])
-      })
+      // 清除之前的定时器，确保只有最后一次（完整列表）会被读取
+      if (handleChangeTimerRef.current) clearTimeout(handleChangeTimerRef.current)
+      handleChangeTimerRef.current = setTimeout(() => {
+        handleChangeTimerRef.current = undefined
+        void getListMusics(id).then((list) => {
+          if (currentListIdRef.current != id) return
+          selectedListRef.current = []
+          setSelectedList([])
+          setList([...list])
+          setListVersion(v => v + 1)
+        })
+      }, 500)  // 300ms 足够等待 getListDetailAll 完成
     }
 
     const handleJumpPosition = () => {
@@ -174,6 +185,7 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
       global.state_event.off('mylistToggled', updateList)
       global.app_event.off('myListMusicUpdate', handleChange)
       global.app_event.off('jumpListPosition', handleJumpPosition)
+      if (handleChangeTimerRef.current) clearTimeout(handleChangeTimerRef.current)
     }
   }, [])
 
@@ -274,16 +286,15 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
       onScroll={handleScroll}
       style={styles.list}
       data={currentList}
-      maxToRenderPerBatch={4}
       numColumns={rowInfo.current.rowNum}
       horizontal={false}
-      // updateCellsBatchingPeriod={80}
-      windowSize={8}
-      removeClippedSubviews={true}
-      initialNumToRender={12}
+      windowSize={21}
+      removeClippedSubviews={false}
+      initialNumToRender={300}
+      maxToRenderPerBatch={30}
       renderItem={renderItem}
       keyExtractor={getkey}
-      extraData={activeIndex}
+      extraData={[activeIndex, listVersion]}
       getItemLayout={getItemLayout}
     />
   )

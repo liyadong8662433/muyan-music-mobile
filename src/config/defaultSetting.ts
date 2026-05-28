@@ -1,6 +1,6 @@
 const defaultSetting: LX.AppSetting = {
   version: '2.0',
-  'common.isAutoTheme': false,
+  'common.isAutoTheme': true,
   'common.langId': null,
   'common.apiSource': '',
   'common.sourceNameType': 'alias',
@@ -73,8 +73,8 @@ const defaultSetting: LX.AppSetting = {
   'sync.enable': false,
 
   // 'theme.id': 'blue_plus',
-  'theme.id': 'green',
-  'theme.lightId': 'green',
+  'theme.id': 'shiguang',
+  'theme.lightId': 'shiguang',
   'theme.darkId': 'black',
   'theme.hideBgDark': false,
   'theme.dynamicBg': false,

@@ -19,7 +19,7 @@ export default memo(({ isHome = false }: { isHome?: boolean }) => {
   const autoHidePlayBar = useSettingValue('common.autoHidePlayBar')
 
   const playerComponent = useMemo(() => (
-    <View style={{ ...styles.container, backgroundColor: theme['c-content-background'] }}>
+    <View style={{ ...styles.container, backgroundColor: 'transparent' }}>
       <Pic isHome={isHome} />
       <View style={styles.center}>
         <Title isHome={isHome} />
@@ -56,7 +56,7 @@ const styles = createStyle({
     borderTopRightRadius: 6,
     flexDirection: 'row',
     alignItems: 'center',
-    elevation: 10,
+    elevation: 0,
   },
   left: {
     // borderRadius: 3,

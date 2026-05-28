@@ -1,5 +1,6 @@
 import state, { type InitState } from './state'
 import { type COMPONENT_IDS } from '@/config/constant'
+import { type ListInfoItem } from '@/store/songlist/state'
 
 
 export default {
@@ -24,7 +25,7 @@ export default {
   },
   setNavActiveId(id: InitState['navActiveId']) {
     state.navActiveId = id
-    if (id != 'nav_setting') state.lastNavActiveId = id
+    if (id != 'nav_setting' && id != 'nav_playlist' && id != 'nav_love') state.lastNavActiveId = id
     global.state_event.navActiveIdUpdated(id)
   },
   setLastNavActiveId(id: InitState['navActiveId']) {
@@ -37,6 +38,10 @@ export default {
   setSourceNames(names: InitState['sourceNames']) {
     state.sourceNames = names
     global.state_event.sourceNamesUpdated(names)
+  },
+  setInlineSonglistDetail(info: ListInfoItem | null) {
+    state.inlineSonglistDetail = info
+    global.state_event.inlineSonglistDetailUpdated(info)
   },
 }
 

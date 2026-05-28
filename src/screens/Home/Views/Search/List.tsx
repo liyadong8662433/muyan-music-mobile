@@ -24,12 +24,14 @@ export default forwardRef<ListType, ListProps>(({ onSearch }, ref) => {
       if (text) {
         setShowListView(false)
         setListType(type)
-        // const listDetailInfo = searchMusicState.listDetailInfo
+        // 同步搜索文字给 TopNav，确保返回按钮能正确判断当前状态
+        global.app_event.emit('updateSearchText', text)
         requestAnimationFrame(() => {
           listRef.current?.loadList(text, source)
         })
       } else {
         setShowListView(true)
+        global.app_event.emit('updateSearchText', '')
         requestAnimationFrame(() => {
           blankViewRef.current?.show(source)
         })

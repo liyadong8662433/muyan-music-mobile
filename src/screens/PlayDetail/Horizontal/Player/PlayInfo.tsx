@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
 
 import Progress from '@/components/player/Progress'
 import Status from './Status'
@@ -22,6 +22,8 @@ const PlayTimeMax = memo(({ timeStr }: { timeStr: string }) => {
   return <Text color={theme['c-500']}>{timeStr}</Text>
 })
 
+const PROGRESS_WIDTH = '100%'
+
 export default () => {
   const theme = useTheme()
   const { maxPlayTimeStr, nowPlayTimeStr, progress, maxPlayTime } = useProgress()
@@ -38,7 +40,7 @@ export default () => {
         <Text color={theme['c-500']}> / </Text>
         <PlayTimeMax timeStr={maxPlayTimeStr} />
       </View>
-      <View style={[StyleSheet.absoluteFill, styles.progress]}><Progress progress={progress} duration={maxPlayTime} buffered={buffered} /></View>
+      <View style={styles.progress}><Progress progress={progress} duration={maxPlayTime} buffered={buffered} /></View>
     </View>
   )
 }
@@ -57,8 +59,11 @@ const styles = createStyle({
     justifyContent: 'space-between',
   },
   progress: {
-    flexGrow: 1,
-    flexShrink: 0,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: `${((100 - parseFloat(PROGRESS_WIDTH)) / 2)}%`,
+    right: `${((100 - parseFloat(PROGRESS_WIDTH)) / 2)}%`,
     flexDirection: 'column',
     justifyContent: 'center',
   },
@@ -74,35 +79,3 @@ const styles = createStyle({
     paddingRight: 5,
   },
 })
-// const styles = createStyle({
-//   container: {
-//     flex: 1,
-//     // height: 16,
-//     // flexGrow: 0,
-//     // flexShrink: 0,
-//     // flexDirection: 'column',
-//     // justifyContent: 'center',
-//     // alignItems: 'center',
-//     // marginBottom: -1,
-//     // backgroundColor: '#ccc',
-//     // overflow: 'hidden',
-//     // height:
-//     // position: 'absolute',
-//     // width: '100%',
-//     // top: 0,
-//     paddingVertical: 2,
-//     paddingHorizontal: 5,
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//   },
-//   progress: {
-//     paddingVertical: 2,
-//     zIndex: 100,
-//   },
-//   status: {
-//     flexGrow: 1,
-//     flexShrink: 1,
-//     paddingRight: 5,
-//   },
-// })

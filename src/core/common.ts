@@ -83,10 +83,15 @@ export const removeComponentId = (name: string) => {
 export const setNavActiveId = (id: Parameters<typeof commonActions.setNavActiveId>['0']) => {
   if (id == commonState.navActiveId) return
   commonActions.setNavActiveId(id)
-  if (id != 'nav_setting') {
+  // nav_playlist、nav_love、nav_singer、nav_daily30 不持久化，重启后不恢复到这些页面
+  if (id != 'nav_setting' && id != 'nav_playlist' && id != 'nav_love' && id != 'nav_singer' && id != 'nav_daily30') {
     commonActions.setLastNavActiveId(id)
     saveViewPrevState({ id })
   }
+}
+
+export const setInlineSonglistDetail = (info: Parameters<typeof commonActions.setInlineSonglistDetail>['0']) => {
+  commonActions.setInlineSonglistDetail(info)
 }
 
 export const showPactModal = () => {

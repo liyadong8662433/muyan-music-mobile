@@ -1,4 +1,4 @@
-import { createList, setTempList } from '@/core/list'
+import { createList, overwriteListMusics } from '@/core/list'
 import { playList } from '@/core/player/player'
 import { getListDetail, getListDetailAll } from '@/core/leaderboard'
 import { LIST_IDS } from '@/config/constant'
@@ -11,23 +11,19 @@ const getListId = (id: string) => `board__${id}`
 
 export const handlePlay = async(id: string, list?: LX.Music.MusicInfoOnline[], index = 0) => {
   let isPlayingList = false
-  // console.log(list)
-  const listId = getListId(id)
   if (!list?.length) list = (await getListDetail(id, 1)).list
   if (list?.length) {
-    await setTempList(listId, [...list])
-    void playList(LIST_IDS.TEMP, index)
+    await overwriteListMusics(LIST_IDS.DEFAULT, [...list])
+    void playList(LIST_IDS.DEFAULT, index)
     isPlayingList = true
   }
   const fullList = await getListDetailAll(id)
   if (!fullList.length) return
-  if (isPlayingList) {
-    if (listState.tempListMeta.id == listId) {
-      await setTempList(listId, [...fullList])
-    }
-  } else {
-    await setTempList(listId, [...fullList])
-    void playList(LIST_IDS.TEMP, index)
+  // 始终用完整列表覆盖 DEFAULT，无论当前 activeListId 是什么
+  // 播放列表面板总是显示 DEFAULT，确保数据完整
+  await overwriteListMusics(LIST_IDS.DEFAULT, [...fullList])
+  if (!isPlayingList) {
+    void playList(LIST_IDS.DEFAULT, index)
   }
 }
 

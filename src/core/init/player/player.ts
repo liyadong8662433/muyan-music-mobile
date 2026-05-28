@@ -4,6 +4,8 @@ import { setStatusText, setIsPlay } from '@/core/player/playStatus'
 // import { resetPlayerMusicInfo } from '@/core/player/playInfo'
 import { setStop } from '@/plugins/player'
 import { delayUpdateMusicInfo } from '@/plugins/player/playList'
+import { saveData } from '@/plugins/storage'
+import { storageDataPrefix } from '@/config/constant'
 import playerState from '@/store/player/state'
 import settingState from '@/store/setting/state'
 
@@ -50,6 +52,8 @@ export default async(setting: LX.AppSetting) => {
       if (playerState.playedList.length) clearPlayedList()
       const playMusicInfo = playerState.playMusicInfo
       if (newValue == 'random' && playMusicInfo.musicInfo && !playMusicInfo.isTempPlay) addPlayedList({ ...(playMusicInfo as LX.Player.PlayMusicInfo) })
+      // 立即持久化播放模式，避免 throttle 延迟导致退出时丢失
+      void saveData(storageDataPrefix.setting, settingState.setting)
     }
   }
 

@@ -60,6 +60,7 @@ const List = forwardRef<ListType, ListProps>(({
   const theme = useTheme()
   const flatListRef = useRef<FlatList>(null)
   const [currentList, setList] = useState<LX.Music.MusicInfoOnline[]>([])
+  const [listKey, setListKey] = useState(0)
   const [showSource, setShowSource] = useState(false)
   const isMultiSelectModeRef = useRef(false)
   const selectModeRef = useRef<SelectMode>('single')
@@ -76,7 +77,8 @@ const List = forwardRef<ListType, ListProps>(({
 
   useImperativeHandle(ref, () => ({
     setList(list, isAppend, showSource) {
-      setList(list)
+      setList(prev => isAppend ? [...prev, ...list] : list)
+      setListKey(prev => prev + 1)
       setShowSource(showSource)
       if (!isAppend && selectedListRef.current.length) setSelectedList(selectedListRef.current = [])
     },
@@ -231,16 +233,17 @@ const List = forwardRef<ListType, ListProps>(({
 
   return (
     <FlatList
+      key={listKey}
       ref={flatListRef}
       style={styles.list}
       data={currentList}
       numColumns={rowInfo.current.rowNum}
       horizontal={false}
-      maxToRenderPerBatch={4}
-      // updateCellsBatchingPeriod={80}
-      windowSize={8}
-      removeClippedSubviews={true}
-      initialNumToRender={12}
+      maxToRenderPerBatch={50}
+      updateCellsBatchingPeriod={50}
+      windowSize={21}
+      removeClippedSubviews={false}
+      initialNumToRender={200}
       renderItem={renderItem}
       keyExtractor={getkey}
       getItemLayout={getItemLayout}

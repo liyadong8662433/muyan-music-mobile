@@ -19,6 +19,7 @@ export default memo(({ item, index, width, showSource, onPress }: {
   const theme = useTheme()
   const itemWidth = width - gap
   const handlePress = () => {
+    console.log('[ListItem] onPress:', item.name, 'source:', item.source)
     onPress(item, index)
   }
   return (
@@ -77,7 +78,8 @@ const styles = createStyle({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   listItemTitle: {
-    fontSize: 12,
+    fontSize: 16,
+    fontWeight: '600',
     // overflow: 'hidden',
     marginBottom: 5,
   },

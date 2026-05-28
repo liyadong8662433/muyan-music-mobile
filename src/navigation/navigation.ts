@@ -38,7 +38,7 @@ export async function pushHomeScreen() {
         style: 'light',
       },
       layout: {
-        orientation: ['portrait'],
+        orientation: ['landscape'],
       },
       bottomTabs: {
         titleDisplayMode: 'alwaysShow',
@@ -73,10 +73,10 @@ export async function pushHomeScreen() {
               },
               navigationBar: {
                 // visible: false,
-                backgroundColor: theme['c-content-background'],
+                backgroundColor: 'transparent',
               },
               layout: {
-                componentBackgroundColor: theme['c-content-background'],
+                componentBackgroundColor: 'transparent',
               },
             },
           },
@@ -105,7 +105,7 @@ export function pushPlayDetailScreen(componentId: string, skipAnimation = false)
         style: 'light',
       },
       layout: {
-        orientation: ['portrait'],
+        orientation: ['landscape'],
       },
       bottomTabs: {
         titleDisplayMode: 'alwaysShow',
@@ -138,10 +138,10 @@ export function pushPlayDetailScreen(componentId: string, skipAnimation = false)
           },
           navigationBar: {
             // visible: false,
-            backgroundColor: theme['c-content-background'],
+            backgroundColor: 'transparent',
           },
           layout: {
-            componentBackgroundColor: theme['c-content-background'],
+            componentBackgroundColor: 'transparent',
           },
           animations: {
             push: skipAnimation ? {} : {
@@ -223,10 +223,10 @@ export function pushSonglistDetailScreen(componentId: string, info: ListInfoItem
           },
           navigationBar: {
             // visible: false,
-            backgroundColor: theme['c-content-background'],
+            backgroundColor: 'transparent',
           },
           layout: {
-            componentBackgroundColor: theme['c-content-background'],
+            componentBackgroundColor: 'transparent',
           },
           animations: {
             push: {
@@ -323,7 +323,7 @@ export function pushCommentScreen(componentId: string) {
         style: 'light',
       },
       layout: {
-        orientation: ['portrait'],
+        orientation: ['landscape'],
       },
       bottomTabs: {
         titleDisplayMode: 'alwaysShow',
@@ -356,10 +356,10 @@ export function pushCommentScreen(componentId: string) {
           },
           navigationBar: {
             // visible: false,
-            backgroundColor: theme['c-content-background'],
+            backgroundColor: 'transparent',
           },
           layout: {
-            componentBackgroundColor: theme['c-content-background'],
+            componentBackgroundColor: 'transparent',
           },
           animations: {
             push: {

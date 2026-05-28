@@ -65,36 +65,45 @@ const getListLimit = async(source: LX.OnlineSource, bangId: string, page: number
     result.list = deduplicationList(result.list.map(m => toNewMusicInfo(m)) as LX.Music.MusicInfoOnline[])
     let p = page
     const tempList = listCache.get(tempListKey) as ListDetailInfo['list']
+    let offset = 0
+
     if (tempList) {
       listCache.delete(tempListKey)
+      const needCount = LIST_LOAD_LIMIT - tempList.length
       listCache.set(`${source}__${bangId}__${p}`, {
         data: {
           ...result,
-          list: [...tempList, ...result.list.splice(0, LIST_LOAD_LIMIT - tempList.length)],
+          list: [...tempList, ...result.list.slice(offset, offset + needCount)],
           page: p,
           limit: LIST_LOAD_LIMIT,
         },
         sourcePage,
       })
+      offset += needCount
       p++
     }
     sourcePage++
-    do {
-      if (result.list.length < LIST_LOAD_LIMIT && sourcePage < Math.ceil(result.total / result.limit)) {
-        listCache.set(tempListKey, result.list.splice(0, LIST_LOAD_LIMIT))
+    const maxSourcePage = Math.ceil(result.total / result.limit)
+    const remaining = () => result.list.length - offset
+
+    while (remaining() > 0) {
+      if (remaining() < LIST_LOAD_LIMIT && sourcePage < maxSourcePage) {
+        listCache.set(tempListKey, result.list.slice(offset))
         break
       }
+      const chunkSize = Math.min(LIST_LOAD_LIMIT, remaining())
       listCache.set(`${source}__${bangId}__${p}`, {
         data: {
           ...result,
-          list: result.list.splice(0, LIST_LOAD_LIMIT),
+          list: result.list.slice(offset, offset + chunkSize),
           page: p,
           limit: LIST_LOAD_LIMIT,
         },
         sourcePage,
       })
+      offset += chunkSize
       p++
-    } while (result.list.length > 0)
+    }
     return (listCache.get(`${source}__${bangId}__${page}`) as PageCache).data
   }) ?? Promise.reject(new Error('source not found'))
 }

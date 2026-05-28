@@ -171,7 +171,7 @@ export class AppEvent extends Event {
   }
 
   jumpListPosition() {
-    if (commonState.navActiveId == 'nav_love') {
+    if (commonState.navActiveId == 'nav_love' || commonState.navActiveId == 'nav_playlist') {
       this.emit('jumpListPosition')
     } else {
       global.lx.jumpMyListPosition = true

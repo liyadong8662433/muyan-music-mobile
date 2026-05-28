@@ -3,8 +3,12 @@ import { log, setUserApiList, setUserApiStatus } from '@/core/userApi'
 import settingState from '@/store/setting/state'
 import BackgroundTimer from 'react-native-background-timer'
 import { fetchData } from './request'
-import { getUserApiList } from '@/utils/data'
+import { getUserApiList, addUserApi } from '@/utils/data'
+import { getData, saveData } from '@/plugins/storage'
+import { existsFile, readFile } from '@/utils/fs'
 import { confirmDialog, openUrl, tipDialog } from '@/utils/tools'
+import { action as userApiAction } from '@/store/userApi'
+import settingActions from '@/store/setting/action'
 
 
 export default async(setting: LX.AppSetting) => {
@@ -253,4 +257,31 @@ export default async(setting: LX.AppSetting) => {
   })
 
   setUserApiList(await getUserApiList())
+
+  // 首次启动时自动导入内置自定义源
+  const AUTO_IMPORT_FLAG = '@user_api_auto_import_v1'
+  const alreadyImported = await getData<string>(AUTO_IMPORT_FLAG)
+  if (!alreadyImported) {
+    const sourcePaths = [
+      '/sdcard/Download/HUIBQ音源.js',
+      '/sdcard/Download/长青SVIP音源.js',
+    ]
+    const importedIds: string[] = []
+    for (const path of sourcePaths) {
+      try {
+        if (!(await existsFile(path))) continue
+        const script = await readFile(path)
+        if (!script) continue
+        const apiInfo = await addUserApi(script)
+        userApiAction.addUserApi(apiInfo)
+        importedIds.push(apiInfo.id)
+      } catch (_) {}
+    }
+    await saveData(AUTO_IMPORT_FLAG, '1')
+
+    // 自动启用长青音源（最后导入的那个）
+    if (importedIds.length > 0 && !setting['common.apiSource']) {
+      settingActions.updateSetting({ 'common.apiSource': importedIds[importedIds.length - 1] })
+    }
+  }
 }

@@ -111,36 +111,45 @@ const getListDetailLimit = async(source: LX.OnlineSource, id: string, page: numb
     result.list = deduplicationList(result.list.map(m => toNewMusicInfo(m)) as LX.Music.MusicInfoOnline[])
     let p = page
     const tempList = listCache.get(tempListKey) as ListDetailInfo['list']
+    let offset = 0
+
     if (tempList) {
       listCache.delete(tempListKey)
+      const needCount = LIST_LOAD_LIMIT - tempList.length
       listCache.set(`sdetail__${source}__${id}__${p}`, {
         data: {
           ...result,
-          list: [...tempList, ...result.list.splice(0, LIST_LOAD_LIMIT - tempList.length)],
+          list: [...tempList, ...result.list.slice(offset, offset + needCount)],
           page: p,
           limit: LIST_LOAD_LIMIT,
         },
         sourcePage,
       })
+      offset += needCount
       p++
     }
     sourcePage++
-    do {
-      if (result.list.length < LIST_LOAD_LIMIT && sourcePage < Math.ceil(result.total / result.limit)) {
-        listCache.set(tempListKey, result.list.splice(0, LIST_LOAD_LIMIT))
+    const maxSourcePage = Math.ceil(result.total / result.limit)
+    const remaining = () => result.list.length - offset
+
+    while (remaining() > 0) {
+      if (remaining() < LIST_LOAD_LIMIT && sourcePage < maxSourcePage) {
+        listCache.set(tempListKey, result.list.slice(offset))
         break
       }
+      const chunkSize = Math.min(LIST_LOAD_LIMIT, remaining())
       listCache.set(`sdetail__${source}__${id}__${p}`, {
         data: {
           ...result,
-          list: result.list.splice(0, LIST_LOAD_LIMIT),
+          list: result.list.slice(offset, offset + chunkSize),
           page: p,
           limit: LIST_LOAD_LIMIT,
         },
         sourcePage,
       })
+      offset += chunkSize
       p++
-    } while (result.list.length > 0)
+    }
     return (listCache.get(`sdetail__${source}__${id}__${page}`) as DetailPageCache).data
   }) ?? Promise.reject(new Error('source not found'))
 }
@@ -186,6 +195,28 @@ export const getListDetail = async(id: string, source: LX.OnlineSource, page: nu
 }
 
 /**
+ * 获取歌单内单页歌曲（分页加载）
+ * @param source 歌单源
+ * @param id 歌单id
+ * @param page 页码
+ * @param isRefresh 是否跳过缓存
+ * @returns 单页歌曲列表及总数信息
+ */
+export const getListDetailPage = async(source: LX.OnlineSource, id: string, page: number, isRefresh = false): Promise<ListDetailInfo> => {
+  const listKey = `sdetail__${source}__${id}`
+  let listCache = cache.get(listKey) as LimitDetailCache
+  if (!listCache || isRefresh) {
+    cache.set(listKey, listCache = new Map())
+  }
+  const pageKey = `sdetail__${source}__${id}__${page}`
+  let pageCache = listCache.get(pageKey) as DetailPageCache
+  if (pageCache && !isRefresh) return pageCache.data
+  const result = await getListDetailLimit(source, id, page)
+  listCache.set(pageKey, { data: result, sourcePage: page })
+  return result
+}
+
+/**
  * 获取歌单内全部歌曲
  * @param id 歌单id
  * @param source 歌单源
@@ -210,12 +241,9 @@ export const getListDetailAll = async(source: LX.OnlineSource, id: string, isRef
     if (result.total <= result.limit) return result.list
 
     let maxPage = Math.ceil(result.total / result.limit)
-    const loadDetail = async(loadPage = 2): Promise<LX.Music.MusicInfoOnline[]> => {
-      return loadPage == maxPage
-        ? loadData(loadPage).then(result => result.list)
-        // eslint-disable-next-line @typescript-eslint/promise-function-async
-        : loadData(loadPage).then(result1 => loadDetail(++loadPage).then(result2 => [...result1.list, ...result2]))
-    }
-    return loadDetail().then(result2 => [...result.list, ...result2])
+    // 并行加载所有页面（跳过第1页，因为它已包含在result中）
+    const pages = Array.from({ length: maxPage - 1 }, (_, i) => loadData(i + 2))
+    const pageResults = await Promise.all(pages)
+    return [...result.list, ...pageResults.flatMap(r => r.list)]
   }).then(list => deduplicationList(list))
 }

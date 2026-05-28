@@ -20,7 +20,8 @@ export const hideModal = (componentId: string) => {
 }
 
 export const checkUpdate = async() => {
-  versionActions.setVersionInfo({ status: 'checking' })
+  // 已关闭自动更新检查
+  return
   let versionInfo: InitState['versionInfo'] = { ...versionState.versionInfo }
   try {
     const { version, desc, history } = await getVersionInfo()

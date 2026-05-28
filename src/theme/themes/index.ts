@@ -13,6 +13,8 @@ export const BG_IMAGES = {
   'landingMoon.png': require('./images/landingMoon2.png') as ImageSourcePropType,
   'myzcbg.jpg': require('./images/myzcbg.jpg') as ImageSourcePropType,
   'xnkl.png': require('./images/xnkl.png') as ImageSourcePropType,
+  'player-bg.jpg': require('./images/player-bg.jpg') as ImageSourcePropType,
+  'bg-shiguang.jpg': require('./images/bg-shiguang.jpg') as ImageSourcePropType,
 } as const
 
 
@@ -46,6 +48,7 @@ type ColorsKey = keyof LX.Theme['config']['themeColors']
 type ExtInfoKey = keyof LX.Theme['config']['extInfo']
 const varColorRxp = /^var\((.+)\)$/
 export const buildActiveThemeColors = (theme: LX.Theme): LX.ActiveTheme => {
+  if (!theme) throw new Error('buildActiveThemeColors: theme is undefined')
   let bgImg: ImageSourcePropType | undefined
   if (theme.isCustom) {
     if (theme.config.extInfo['bg-image']) {
@@ -117,9 +120,12 @@ export const getTheme = async() => {
   //     : settingState.setting['theme.lightId']
   //   // : 'china_ink'
   //   : settingState.setting['theme.id']
-  let themeId = settingState.setting['common.isAutoTheme'] && shouldUseDarkColors
-    ? 'black'
-    : settingState.setting['theme.id']
+  let themeId: string
+  if (settingState.setting['common.isAutoTheme']) {
+    themeId = shouldUseDarkColors ? 'black' : 'shiguang'
+  } else {
+    themeId = settingState.setting['theme.id']
+  }
   // themeId = 'naruto'
   // themeId = 'pink'
   // themeId = 'black'
@@ -128,8 +134,14 @@ export const getTheme = async() => {
     userThemes = await getUserTheme()
     theme = userThemes.find(theme => theme.id == themeId)
     if (!theme) {
-      themeId = settingState.setting['theme.id'] == 'auto' && shouldUseDarkColors ? 'black' : 'green'
-      theme = themes.find(theme => theme.id == themeId) as LX.Theme
+      if (settingState.setting['common.isAutoTheme']) {
+        themeId = shouldUseDarkColors ? 'black' : 'shiguang'
+      } else {
+        themeId = 'green'
+      }
+      theme = themes.find(theme => theme.id == themeId)
+      // 最后兜底：取第一个内置主题
+      if (!theme) theme = themes[0]
     }
   }
 

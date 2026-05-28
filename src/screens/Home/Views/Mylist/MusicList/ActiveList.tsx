@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 
 import { Icon } from '@/components/common/Icon'
 import { BorderWidths } from '@/theme'
@@ -8,7 +8,8 @@ import { useActiveListId, useListFetching } from '@/store/list/hook'
 import listState from '@/store/list/state'
 import { createStyle } from '@/utils/tools'
 import { getListPrevSelectId } from '@/utils/data'
-import { setActiveList } from '@/core/list'
+import { setActiveList, clearListMusics } from '@/core/list'
+import { confirmDialog, toast } from '@/utils/tools'
 import Text from '@/components/common/Text'
 import { LIST_IDS } from '@/config/constant'
 import Loading from '@/components/common/Loading'
@@ -17,12 +18,13 @@ import { useSettingValue } from '@/store/setting/hook'
 export interface ActiveListProps {
   onShowSearchBar: () => void
   onScrollToTop: () => void
+  title?: string
 }
 export interface ActiveListType {
   setVisibleBar: (visible: boolean) => void
 }
 
-export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, onScrollToTop }, ref) => {
+export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, onScrollToTop, title }, ref) => {
   const theme = useTheme()
   const currentListId = useActiveListId()
   const fetching = useListFetching(currentListId)
@@ -52,17 +54,33 @@ export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, o
     global.app_event.changeLoveListVisible(true)
   }
 
+  const handleClearList = async() => {
+    const confirm = await confirmDialog({
+      message: global.i18n.t('list_clear_tip', { name: currentListName }),
+      cancelButtonText: global.i18n.t('dialog_cancel'),
+      confirmButtonText: global.i18n.t('dialog_confirm'),
+    })
+    if (!confirm) return
+    await clearListMusics([currentListId])
+    toast(global.i18n.t('list_clear_success'))
+  }
+
   useEffect(() => {
     void getListPrevSelectId().then((id) => {
       setActiveList(id)
     })
   }, [])
 
+  const isDefaultOrLove = currentListId === LIST_IDS.DEFAULT || currentListId === LIST_IDS.LOVE
+
   return (
     <TouchableOpacity onPress={showList} onLongPress={onScrollToTop} style={{ ...styles.currentList, opacity: visibleBar ? 1 : 0, borderBottomColor: theme['c-border-background'] }}>
-      <Icon style={styles.currentListIcon} color={theme['c-button-font']} name="chevron-right" size={12} />
+      {!isDefaultOrLove ? <Icon style={styles.currentListIcon} color={theme['c-button-font']} name="chevron-right" size={12} /> : null}
       { fetching ? <Loading color={theme['c-button-font']} style={styles.loading} /> : null }
-      <Text style={styles.currentListText} numberOfLines={1} color={theme['c-button-font']}>{currentListName}</Text>
+      {title ? <Text style={{ flex: 1, paddingLeft: 15 }} size={20} bold color={theme['c-button-font']}>{title}</Text> : !isDefaultOrLove ? <Text style={styles.currentListText} numberOfLines={1} color={theme['c-button-font']}>{currentListName}</Text> : <View style={{ flex: 1 }} />}
+      <TouchableOpacity style={styles.currentListBtns} onPress={handleClearList}>
+        <Icon color={theme['c-button-font']} name="remove" size={16} />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.currentListBtns} onPress={onShowSearchBar}>
         <Icon color={theme['c-button-font']} name="search-2" />
       </TouchableOpacity>

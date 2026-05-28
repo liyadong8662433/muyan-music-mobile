@@ -18,10 +18,10 @@ const PADDING_TOP_RAW = 1.8
 const PADDING_TOP = Math.round(scaleSizeWR(PADDING_TOP_RAW))
 const MARGIN_TOP = Math.round(scaleSizeH(2))
 const PADDING_TOP_PROGRESS = PADDING_TOP + MARGIN_TOP
+const PROGRESS_SIDE = '35%'
 
 const PlayTimeCurrent = ({ timeStr }: { timeStr: string }) => {
   const theme = useTheme()
-  // console.log(timeStr)
   return <Text size={FONT_SIZE} color={theme['c-500']}>{timeStr}</Text>
 }
 
@@ -43,7 +43,6 @@ export default ({ isHome }: { isHome: boolean }) => {
 
   return (
     <View style={stylesRaw.container}>
-      {/* <MusicName /> */}
       <View style={styles.status}>
         <Status autoUpdate={autoUpdate} />
       </View>
@@ -52,7 +51,7 @@ export default ({ isHome }: { isHome: boolean }) => {
         <Text size={FONT_SIZE} color={theme['c-500']}> / </Text>
         <PlayTimeMax timeStr={maxPlayTimeStr} />
       </View>
-      <View style={[StyleSheet.absoluteFill, stylesRaw.progress]}>
+      <View style={stylesRaw.progress}>
         {
           allowProgressBarSeek
             ? <Progress progress={progress} duration={maxPlayTime} buffered={buffered} paddingTop={PADDING_TOP_PROGRESS} />
@@ -65,38 +64,15 @@ export default ({ isHome }: { isHome: boolean }) => {
 
 
 const styles = createStyle({
-  // container: {
-  //   // height: 16,
-  //   maxHeight: 32,
-  //   flexGrow: 1,
-  //   flexShrink: 0,
-  //   // flexDirection: 'column',
-  //   // justifyContent: 'center',
-  //   // alignItems: 'center',
-  //   // marginBottom: -1,
-  //   // backgroundColor: '#ccc',
-  //   // overflow: 'hidden',
-  //   // height:
-  //   // position: 'absolute',
-  //   // width: '100%',
-  //   // top: 0,
-  //   paddingTop: PADDING_TOP_RAW,
-  //   paddingHorizontal: 3,
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   justifyContent: 'space-between',
-  // },
   status: {
     flexGrow: 1,
     flexShrink: 1,
     paddingRight: 5,
-    // backgroundColor: '#ccc',
   },
 })
 
 const stylesRaw = StyleSheet.create({
   container: {
-    // height: 16,
     maxHeight: scaleSizeH(32),
     flexGrow: 1,
     flexShrink: 0,
@@ -107,7 +83,11 @@ const stylesRaw = StyleSheet.create({
     justifyContent: 'space-between',
   },
   progress: {
-    // paddingVertical: 2,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: PROGRESS_SIDE,
+    right: PROGRESS_SIDE,
     marginBottom: MARGIN_TOP,
     zIndex: 100,
   },

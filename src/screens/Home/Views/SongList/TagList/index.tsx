@@ -1,47 +1,27 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { type Source } from '@/store/songlist/state'
 import List, { type ListProps, type ListType } from './List'
 
 
 export default () => {
-  const [visible, setVisible] = useState(false)
   const listRef = useRef<ListType>(null)
-  // const [info, setInfo] = useState({ souce: 'kw', activeId: '' })
-
 
   useEffect(() => {
-    let isInited = false
+    // 监听 Content 发出的音源/标签变更事件，由 Content 驱动加载
     const handleShow = (source: Source, id: string) => {
-      if (isInited) {
-        listRef.current?.loadTag(source, id)
-      } else {
-        requestAnimationFrame(() => {
-          setVisible(true)
-          requestAnimationFrame(() => {
-            listRef.current?.loadTag(source, id)
-          })
-        })
-        isInited = true
-      }
+      listRef.current?.loadTag(source, id)
     }
     global.app_event.on('showSonglistTagList', handleShow)
-
     return () => {
       global.app_event.off('showSonglistTagList', handleShow)
     }
   }, [])
 
   const handleTagChange: ListProps['onTagChange'] = (name, id) => {
-    global.app_event.hideSonglistTagList()
-    requestAnimationFrame(() => {
-      global.app_event.songlistTagInfoChange(name, id)
-    })
+    // 不关闭抽屉（已改为常驻），直接通知标签变更
+    global.app_event.songlistTagInfoChange(name, id)
   }
 
-  return (
-    visible
-      ? <List ref={listRef} onTagChange={handleTagChange} />
-      : null
-  )
+  return <List ref={listRef} onTagChange={handleTagChange} />
 }

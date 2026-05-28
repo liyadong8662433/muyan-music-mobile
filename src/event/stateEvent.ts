@@ -121,6 +121,10 @@ export class StateEvent extends Event {
   sourceNamesUpdated(names: CommonState['sourceNames']) {
     this.emit('sourceNamesUpdated', names)
   }
+
+  inlineSonglistDetailUpdated(info: CommonState['inlineSonglistDetail']) {
+    this.emit('inlineSonglistDetailUpdated', info)
+  }
 }
 
 

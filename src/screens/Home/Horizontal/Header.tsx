@@ -14,7 +14,7 @@ import { type InitState as CommonState } from '@/store/common/state'
 import SearchTypeSelector from '@/screens/Home/Views/Search/SearchTypeSelector'
 
 const headerComponents: Partial<Record<CommonState['navActiveId'], React.ReactNode>> = {
-  nav_search: <SearchTypeSelector />,
+  // nav_search: <SearchTypeSelector />, // 已移至搜索页面内部
 }
 
 const HEADER_HEIGHT = _HEADER_HEIGHT * 0.8
@@ -39,8 +39,8 @@ const LeftHeader = () => {
     }}>
       <View style={styles.left}>
         <Text style={styles.leftTitle} size={18}>{t(id)}</Text>
+        {headerComponents[id] ?? null}
       </View>
-      {headerComponents[id] ?? null}
 
       {/* <TouchableOpacity style={styles.btn} onPress={openSetting}>
         <Icon style={{ ...styles.btnText, color: theme['c-font'] }} name="setting" size={styles.btnText.fontSize} />

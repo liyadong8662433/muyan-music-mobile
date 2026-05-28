@@ -1,11 +1,10 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react'
-import { ScrollView, TouchableOpacity } from 'react-native'
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
+import { View, TouchableOpacity } from 'react-native'
 import songlistState, { type SortInfo, type Source } from '@/store/songlist/state'
 import { useI18n } from '@/lang'
 import { useTheme } from '@/store/theme/hook'
 import Text from '@/components/common/Text'
 import { createStyle } from '@/utils/tools'
-import { BorderWidths } from '@/theme'
 
 export interface SortTabProps {
   onSortChange: (id: string) => void
@@ -21,11 +20,9 @@ export default forwardRef<SortTabType, SortTabProps>(({ onSortChange }, ref) => 
   const [activeId, setActiveId] = useState<SortInfo['id']>('')
   const t = useI18n()
   const theme = useTheme()
-  const scrollViewRef = useRef<ScrollView>(null)
 
   useImperativeHandle(ref, () => ({
     setSource(source, activeTab) {
-      scrollViewRef.current?.scrollTo({ x: 0 })
       setSortList(songlistState.sortList[source]!)
       setActiveId(activeTab)
     },
@@ -41,41 +38,38 @@ export default forwardRef<SortTabType, SortTabProps>(({ onSortChange }, ref) => 
   }
 
   return (
-    <ScrollView ref={scrollViewRef} style={styles.container} keyboardShouldPersistTaps={'always'} horizontal>
+    <View style={styles.container}>
       {
         sorts.map(s => (
-          <TouchableOpacity style={styles.button} onPress={() => { handleSortChange(s.id) }} key={s.id}>
-            <Text style={{ ...styles.buttonText, borderBottomColor: activeId == s.id ? theme['c-primary-background-active'] : 'transparent' }} color={activeId == s.id ? theme['c-primary-font-active'] : theme['c-font']}>{s.label}</Text>
+          <TouchableOpacity
+            style={{ ...styles.button, backgroundColor: activeId == s.id ? theme['c-primary-background-active'] : 'rgba(255,255,255,0.12)' }}
+            onPress={() => { handleSortChange(s.id) }} key={s.id}
+          >
+            <Text style={styles.buttonText} color={activeId == s.id ? theme['c-primary-font-active'] : theme['c-font']}>{s.label}</Text>
           </TouchableOpacity>
         ))
       }
-    </ScrollView>
+    </View>
   )
 })
 
 
 const styles = createStyle({
   container: {
-    flexGrow: 1,
-    flexShrink: 1,
-    // paddingLeft: 5,
-    // paddingRight: 5,
+    flexDirection: 'row',
+    marginLeft: 0,
   },
   button: {
-    // height: 38,
-    // lineHeight: 38,
     justifyContent: 'center',
-    paddingLeft: 14,
-    paddingRight: 14,
-    // width: 80,
-    // backgroundColor: 'rgba(0,0,0,0.1)',
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingVertical: 5,
+    borderRadius: 6,
+    marginRight: 6,
   },
   buttonText: {
-    // height: 38,
-    // lineHeight: 38,
     textAlign: 'center',
-    paddingHorizontal: 2,
-    paddingVertical: 3,
-    borderBottomWidth: BorderWidths.normal3,
+    fontSize: 18,
+    fontWeight: '600',
   },
 })

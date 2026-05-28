@@ -53,11 +53,11 @@ export default memo(({ item, index, activeIndex, onPress, onShowMenu, onLongPres
         }
         <View style={styles.itemInfo}>
           {/* <View style={styles.listItemTitle}> */}
-          <Text color={active ? theme['c-primary-font'] : theme['c-font']} numberOfLines={1}>{item.name}</Text>
+          <Text size={20} color={active ? theme['c-primary-font'] : theme['c-font']} numberOfLines={1} style={{ fontWeight: '600' }}>{item.name}</Text>
           {/* </View> */}
           <View style={styles.listItemSingle}>
             <Badge>{item.source.toUpperCase()}</Badge>
-            <Text style={styles.listItemSingleText} size={11} color={active ? theme['c-primary-alpha-200'] : theme['c-500']} numberOfLines={1}>
+            <Text style={styles.listItemSingleText} size={16} color={active ? theme['c-primary-alpha-200'] : theme['c-450']} numberOfLines={1}>
               {singer}
             </Text>
           </View>
@@ -132,7 +132,7 @@ const styles = createStyle({
     // backgroundColor: 'rgba(0,0,0,0.2)',
     flexGrow: 0,
     flexShrink: 1,
-    fontWeight: '300',
+    fontWeight: '400',
     // fontSize: 15,
   },
   // listItemBadge: {

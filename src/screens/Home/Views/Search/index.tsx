@@ -5,8 +5,8 @@ import { type LayoutChangeEvent, View } from 'react-native'
 // import InsetShadow from 'react-native-inset-shadow'
 // import TipList from './components/TipList'
 // import MusicList from './components/MusicList'
-import HeaderBar, { type HeaderBarProps, type HeaderBarType } from './HeaderBar'
-import searchState, { type SearchType } from '@/store/search/state'
+import HeaderBar, { type HeaderBarType } from './HeaderBar'
+import searchState from '@/store/search/state'
 import searchMusicState from '@/store/search/music/state'
 import searchSonglistState from '@/store/search/songlist/state'
 import { getSearchSetting, saveSearchSetting } from '@/utils/data'
@@ -27,37 +27,17 @@ export default () => {
   const searchTipListRef = useRef<TipListType>(null)
   const listRef = useRef<ListType>(null)
   const layoutHeightRef = useRef<number>(0)
-  const searchInfo = useRef<SearchInfo>({ temp_source: 'kw', source: 'kw', searchType: 'music' })
+  const searchInfo = useRef<SearchInfo>({ temp_source: 'kw', source: 'all', searchType: 'music' })
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     void getSearchSetting().then(info => {
-      // info.type = 'music'
       searchInfo.current.temp_source = info.temp_source
       searchInfo.current.source = info.source
       searchInfo.current.searchType = info.type
-      switch (info.type) {
-        case 'music':
-          headerBarRef.current?.setSourceList(searchMusicState.sources, info.source)
-          break
-        case 'songlist':
-          headerBarRef.current?.setSourceList(searchSonglistState.sources, info.source)
-          break
-      }
       headerBarRef.current?.setText(searchState.searchText)
       listRef.current?.loadList(searchState.searchText, searchInfo.current.source, searchInfo.current.searchType)
     })
-
-    const handleTypeChange = (type: SearchType) => {
-      searchInfo.current.searchType = type
-      void saveSearchSetting({ type })
-      listRef.current?.loadList(searchState.searchText, searchInfo.current.source, type)
-    }
-    global.app_event.on('searchTypeChanged', handleTypeChange)
-
-    return () => {
-      global.app_event.off('searchTypeChanged', handleTypeChange)
-    }
   }, [])
 
 
@@ -65,12 +45,7 @@ export default () => {
     layoutHeightRef.current = e.nativeEvent.layout.height
   }
 
-  const handleSourceChange: HeaderBarProps['onSourceChange'] = (source) => {
-    searchInfo.current.source = source
-    void saveSearchSetting({ source })
-    listRef.current?.loadList(searchState.searchText, source, searchInfo.current.searchType)
-  }
-  const handleTipSearch: HeaderBarProps['onTipSearch'] = (text) => {
+  const handleTipSearch: HeaderBarType['onTipSearch'] = (text) => {
     setTimeout(() => {
       searchTipListRef.current?.search(text, layoutHeightRef.current)
     }, 500)
@@ -82,7 +57,7 @@ export default () => {
     }
     searchTipListRef.current?.hide()
   }
-  const handleSearch: HeaderBarProps['onSearch'] = (text) => {
+  const handleSearch: HeaderBarType['onSearch'] = (text) => {
     handleHideTipList()
     searchTipListRef.current?.search(text, layoutHeightRef.current)
     headerBarRef.current?.setText(text)
@@ -90,7 +65,7 @@ export default () => {
     void addHistoryWord(text)
     listRef.current?.loadList(text, searchInfo.current.source, searchInfo.current.searchType)
   }
-  const handleShowTipList: HeaderBarProps['onShowTipList'] = () => {
+  const handleShowTipList: HeaderBarType['onShowTipList'] = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     timeoutRef.current = setTimeout(() => {
       searchTipListRef.current?.show(layoutHeightRef.current)
@@ -101,7 +76,6 @@ export default () => {
     <View style={styles.container}>
       <HeaderBar
         ref={headerBarRef}
-        onSourceChange={handleSourceChange}
         onTipSearch={handleTipSearch}
         onSearch={handleSearch}
         onHideTipList={handleHideTipList}
@@ -118,9 +92,9 @@ export default () => {
 const styles = createStyle({
   container: {
     width: '100%',
-    flex: 1,
+    flex:1,
   },
   content: {
-    flex: 1,
+    flex:1,
   },
 })

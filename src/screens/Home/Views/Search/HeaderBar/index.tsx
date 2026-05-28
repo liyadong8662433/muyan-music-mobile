@@ -1,5 +1,5 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react'
-import { View } from 'react-native'
+import { View, useColorScheme } from 'react-native'
 
 // import music from '@/utils/musicSdk'
 import { BorderWidths } from '@/theme'
@@ -10,7 +10,6 @@ import SourceSelector, {
 } from '@/components/SourceSelector'
 import SearchInput, { type SearchInputType, type SearchInputProps } from './SearchInput'
 import { createStyle } from '@/utils/tools'
-import { useTheme } from '@/store/theme/hook'
 import { type Source as MusicSource } from '@/store/search/music/state'
 import { type Source as SonglistSource } from '@/store/search/songlist/state'
 
@@ -36,7 +35,7 @@ export interface HeaderBarType {
 export default forwardRef<HeaderBarType, HeaderBarProps>(({ onSourceChange, onTipSearch, onSearch, onHideTipList, onShowTipList }, ref) => {
   const sourceSelectorRef = useRef<SourceSelectorType>(null)
   const searchInputRef = useRef<SearchInputType>(null)
-  const theme = useTheme()
+  const isDark = useColorScheme() === 'dark'
 
   useImperativeHandle(ref, () => ({
     setSourceList(list, source) {
@@ -52,7 +51,7 @@ export default forwardRef<HeaderBarType, HeaderBarProps>(({ onSourceChange, onTi
 
 
   return (
-    <View style={{ ...styles.searchBar, borderBottomColor: theme['c-border-background'] }}>
+    <View style={{ ...styles.searchBar, borderBottomColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }}>
       <View style={styles.selector}>
         <SourceSelector ref={sourceSelectorRef} onSourceChange={onSourceChange} center />
       </View>
@@ -74,6 +73,7 @@ const styles = createStyle({
     zIndex: 2,
     paddingRight: 10,
     borderBottomWidth: BorderWidths.normal,
+    alignItems: 'center',
   },
   selector: {
     // width: 86,

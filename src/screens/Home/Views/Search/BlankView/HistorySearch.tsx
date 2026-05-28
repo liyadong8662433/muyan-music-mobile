@@ -24,7 +24,7 @@ const ListItem = ({ keyword, onSearch, onRemove }: {
       onPress={() => { onSearch(keyword) }}
       onLongPress={() => { onRemove(keyword) }}
     >
-      <Text color={theme['c-button-font']} size={13}>{keyword}</Text>
+      <Text color={theme['c-font']} size={16}>{keyword}</Text>
     </Button>
   )
 }
@@ -79,9 +79,9 @@ export default forwardRef<HistorySearchType, HistorySearchProps>((props, ref) =>
       ? (
           <View>
             <View style={styles.titleContent}>
-              <Text size={16}>{t('search_history_search')}</Text>
+              <Text size={16} color={theme['c-font']}>{t('search_history_search')}</Text>
               <TouchableOpacity onPress={handleClear} style={styles.titleBtn}>
-                <Icon name="eraser" color={theme['c-300']} size={14} />
+                <Icon name="eraser" color={theme['c-font']} size={14} />
               </TouchableOpacity>
             </View>
             <View style={styles.list}>

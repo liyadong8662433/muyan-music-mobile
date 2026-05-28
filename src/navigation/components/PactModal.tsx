@@ -17,8 +17,8 @@ import settingState from '@/store/setting/state'
 const Content = () => {
   const theme = useTheme()
 
-  const openHomePage = () => {
-    void openUrl('https://github.com/lyswhut/lx-music-mobile#readme')
+  const openSourcePage = () => {
+    void openUrl('https://github.com/lyswhut/lx-music-mobile')
   }
   const openLicensePage = () => {
     void openUrl('http://www.apache.org/licenses/LICENSE-2.0')
@@ -28,7 +28,6 @@ const Content = () => {
     ...styles.text,
     textDecorationLine: 'underline',
     color: theme['c-primary-font'],
-    // fontSize: 15,
   } as const
 
   return (
@@ -36,30 +35,38 @@ const Content = () => {
       <Text style={styles.title} size={18} >许可协议</Text>
       <ScrollView style={styles.content} keyboardShouldPersistTaps={'always'}>
         {!settingState.setting['common.isAgreePact'] && <Text selectable style={styles.bold} >在使用本软件前，你（使用者）需签署本协议才可继续使用！{'\n'}</Text>}
-        <Text selectable style={styles.text} >本项目基于 <Text onPress={openLicensePage} style={textLinkStyle}>Apache License 2.0</Text> 许可证发行，以下协议是对于 Apache License 2.0 的补充，如有冲突，以以下协议为准。{'\n'}</Text>
-        <Text selectable style={styles.text} >词语约定：本协议中的“本项目”指 LX Music（洛雪音乐）移动版项目；“使用者”指签署本协议的使用者；“官方音乐平台”指对本项目内置的包括酷我、酷狗、咪咕等音乐源的官方平台统称；“版权数据”指包括但不限于图像、音频、名字等在内的他人拥有所属版权的数据。{'\n'}</Text>
-        <Text selectable style={styles.bold} >一、数据来源{'\n'}</Text>
-        <Text selectable style={styles.text} >1.1 本项目的数据来源原理是从各官方音乐平台的公开服务器中拉取数据（与未登录状态在官方平台 APP 获取的数据相同），经过对数据简单地筛选与合并后进行展示，因此本项目不对数据的准确性负责。{'\n'}</Text>
-        <Text selectable style={styles.text} >1.2 本项目本身没有获取某个音频数据的能力，本项目使用的在线音频数据来源来自软件设置内“自定义源”设置所选择的“源”返回的在线链接。例如播放某首歌，本项目所做的只是将希望播放的歌曲名、艺术家等信息传递给“源”，若“源”返回了一个链接，则本项目将认为这就是该歌曲的音频数据而进行使用，至于这是不是正确的音频数据本项目无法校验其准确性，所以使用本项目的过程中可能会出现希望播放的音频与实际播放的音频不对应或者无法播放的问题。{'\n'}</Text>
-        <Text selectable style={styles.text} >1.3 本项目的非官方平台数据（例如“我的列表”内列表）来自使用者本地系统或者使用者连接的同步服务，本项目不对这些数据的合法性、准确性负责。{'\n'}</Text>
-        <Text selectable style={styles.bold} >二、版权数据{'\n'}</Text>
-        <Text selectable style={styles.text} >2.1 使用本项目的过程中可能会产生版权数据。对于这些版权数据，本项目不拥有它们的所有权。为了避免侵权，使用者务必在 <Text style={styles.bold}>24 小时内</Text> 清除使用本项目的过程中所产生的版权数据。{'\n'}</Text>
-        <Text selectable style={styles.bold} >三、音乐平台别名{'\n'}</Text>
-        <Text selectable style={styles.text} >3.1 本项目内的官方音乐平台别名为本项目内对官方音乐平台的一个称呼，不包含恶意。如果官方音乐平台觉得不妥，可联系本项目更改或移除。{'\n'}</Text>
-        <Text selectable style={styles.bold} >四、资源使用{'\n'}</Text>
-        <Text selectable style={styles.text} >4.1 本项目内使用的部分包括但不限于字体、图片等资源来源于互联网。如果出现侵权可联系本项目移除。{'\n'}</Text>
+        <Text selectable style={styles.text} >本软件「沐沐MUSIC」是基于开源项目 <Text onPress={openSourcePage} style={textLinkStyle}>LX Music（洛雪音乐）</Text> 进行修改定制的<Text style={styles.bold}>第三方修改版</Text>，本项目基于 <Text onPress={openLicensePage} style={textLinkStyle}>Apache License 2.0</Text> 许可证发行。以下协议是对 Apache License 2.0 的补充，如有冲突，以以下协议为准。{'\n'}</Text>
+        <Text selectable style={styles.bold} >一、项目说明{'\n'}</Text>
+        <Text selectable style={styles.text} >1.1 本软件是在 LX Music 开源代码基础上进行的个性化修改版本，与 LX Music 原作者无任何关联，原作者不对本修改版承担任何责任。{'\n'}</Text>
+        <Text selectable style={styles.text} >1.2 本软件仅供个人学习、研究和技术交流使用，不得用于任何商业用途。{'\n'}</Text>
+        <Text selectable style={styles.text} >1.3 本软件按"原样"提供，不提供任何明示或暗示的担保，包括但不限于对适销性、特定用途适用性的担保。{'\n'}</Text>
+        <Text selectable style={styles.bold} >二、数据来源{'\n'}</Text>
+        <Text selectable style={styles.text} >2.1 本软件的数据获取原理是从各官方音乐平台的公开服务器中拉取数据（与未登录状态在官方平台 APP 获取的数据相同），经过简单筛选与合并后进行展示。本软件<Text style={styles.bold}>不对数据的准确性、完整性、合法性承担任何责任</Text>。{'\n'}</Text>
+        <Text selectable style={styles.text} >2.2 本软件本身没有获取某个音频数据的能力，本软件使用的在线音频数据来源来自软件设置内"自定义源"设置所选择的"源"返回的在线链接。本软件无法校验"源"返回数据的准确性与合法性，使用本软件过程中可能会出现希望播放的音频与实际播放的音频不对应或者无法播放的问题。{'\n'}</Text>
+        <Text selectable style={styles.text} >2.3 本软件的非官方平台数据（例如"我的列表"内列表）来自使用者本地系统或者使用者连接的同步服务，本软件不对这些数据的合法性、准确性负责。{'\n'}</Text>
+        <Text selectable style={styles.bold} >三、版权声明{'\n'}</Text>
+        <Text selectable style={styles.text} >3.1 本软件尊重并保护所有版权所有者的合法权益。使用本软件的过程中可能会产生版权数据，对于这些版权数据，本软件<Text style={styles.bold}>不拥有它们的所有权</Text>。{'\n'}</Text>
+        <Text selectable style={styles.text} >3.2 为了避免侵权，使用者务必在 <Text style={styles.bold}>24 小时内</Text> 清除使用本软件的过程中所产生的版权数据。{'\n'}</Text>
+        <Text selectable style={styles.text} >3.3 本软件内使用的部分包括但不限于字体、图片、图标等资源来源于互联网。如果出现侵权，可联系本软件开发者移除。{'\n'}</Text>
+        <Text selectable style={styles.text} >3.4 <Text style={styles.bold}>音乐平台不易，请尊重版权，支持正版。</Text>{'\n'}</Text>
+        <Text selectable style={styles.bold} >四、音乐平台别名{'\n'}</Text>
+        <Text selectable style={styles.text} >4.1 本软件内的官方音乐平台别名为本软件内对官方音乐平台的一个称呼，不包含恶意。如果官方音乐平台觉得不妥，可联系本软件开发者更改或移除。{'\n'}</Text>
         <Text selectable style={styles.bold} >五、免责声明{'\n'}</Text>
-        <Text selectable style={styles.text} >5.1 由于使用本项目产生的包括由于本协议或由于使用或无法使用本项目而引起的任何性质的任何直接、间接、特殊、偶然或结果性损害（包括但不限于因商誉损失、停工、计算机故障或故障引起的损害赔偿，或任何及所有其他商业损害或损失）由使用者负责。{'\n'}</Text>
+        <Text selectable style={styles.text} >5.1 <Text style={styles.bold}>本软件开发者不对因使用本软件而产生的任何直接、间接、特殊、偶然或结果性损害承担责任</Text>，包括但不限于因商誉损失、停工、计算机故障或故障引起的损害赔偿，或任何及所有其他商业损害或损失。{'\n'}</Text>
+        <Text selectable style={styles.text} >5.2 本软件开发者不对本软件的可用性、可靠性、准确性做任何保证，本软件可能包含错误、漏洞或中断，使用者需自行承担使用风险。{'\n'}</Text>
+        <Text selectable style={styles.text} >5.3 由于网络原因、第三方服务（包括但不限于音乐平台服务器、自定义源服务）不稳定或终止服务等原因导致本软件部分或全部功能无法使用的，本软件开发者不承担任何责任。{'\n'}</Text>
         <Text selectable style={styles.bold} >六、使用限制{'\n'}</Text>
-        <Text selectable style={styles.text} >6.1 本项目完全免费，且开源发布于 <Text onPress={openHomePage} style={textLinkStyle}>GitHub</Text> 面向全世界人用作对技术的学习交流，本项目不对项目内的技术可能存在违反当地法律法规的行为作保证。{'\n'}</Text>
-        <Text selectable style={styles.text} >6.2 <Text style={styles.bold}>禁止在违反当地法律法规的情况下使用本项目</Text>，对于使用者在明知或不知当地法律法规不允许的情况下使用本项目所造成的任何违法违规行为由使用者承担，本项目不承担由此造成的任何直接、间接、特殊、偶然或结果性责任。{'\n'}</Text>
-        <Text selectable style={styles.bold} >七、版权保护{'\n'}</Text>
-        <Text selectable style={styles.text} >7.1 音乐平台不易，请尊重版权，支持正版。{'\n'}</Text>
-        <Text selectable style={styles.bold} >八、非商业性质{'\n'}</Text>
-        <Text selectable style={styles.text} >8.1 本项目仅用于对技术可行性的探索及研究，不接受任何商业（包括但不限于广告等）合作及捐赠。{'\n'}</Text>
-        <Text selectable style={styles.bold} >九、接受协议{'\n'}</Text>
-        <Text selectable style={styles.text} >9.1 若你使用了本项目，将代表你接受本协议。{'\n'}</Text>
-        <Text selectable style={styles.text} >* 若协议更新，恕不另行通知，可到开源地址查看。</Text>
+        <Text selectable style={styles.text} >6.1 <Text style={styles.bold}>禁止在违反当地法律法规的情况下使用本软件</Text>，对于使用者在明知或不知当地法律法规不允许的情况下使用本软件所造成的任何违法违规行为由使用者承担，本软件开发者不承担由此造成的任何责任。{'\n'}</Text>
+        <Text selectable style={styles.text} >6.2 禁止对本软件进行反向工程、反编译、破解或使用任何方式获取本软件源代码（本软件所基于的开源项目源代码除外）。{'\n'}</Text>
+        <Text selectable style={styles.text} >6.3 禁止将本软件用于任何违法、侵权或损害第三方合法权益的行为。{'\n'}</Text>
+        <Text selectable style={styles.bold} >七、非商业性质{'\n'}</Text>
+        <Text selectable style={styles.text} >7.1 本软件完全免费，仅用于对技术可行性的探索及研究，<Text style={styles.bold}>不接受任何商业（包括但不限于广告、付费功能等）合作及捐赠</Text>。{'\n'}</Text>
+        <Text selectable style={styles.text} >7.2 若你在使用本软件的过程中遇到广告或者引流（如需要加群、关注公众号、付费等才能使用或升级）的信息，则表明你当前运行的软件是<Text style={styles.bold}>被他人篡改的版本</Text>，与本软件开发者无关。{'\n'}</Text>
+        <Text selectable style={styles.bold} >八、开源声明{'\n'}</Text>
+        <Text selectable style={styles.text} >8.1 本软件所基于的 LX Music 项目代码已开源发布于 <Text onPress={openSourcePage} style={textLinkStyle}>GitHub</Text>，本软件的修改部分也同样遵循 Apache License 2.0 许可证开源。{'\n'}</Text>
+        <Text selectable style={styles.bold} >九、协议接受{'\n'}</Text>
+        <Text selectable style={styles.text} >9.1 若你使用本软件，将代表你已充分阅读并理解本协议，且接受本协议全部条款。{'\n'}</Text>
+        <Text selectable style={styles.text} >* 若协议更新，恕不另行通知，可到开源地址查看最新版本。</Text>
       </ScrollView>
     </View>
   )
@@ -68,12 +75,10 @@ const Content = () => {
 const Footer = ({ componentId }: { componentId: string }) => {
   const theme = useTheme()
   const isAgreePact = useSettingValue('common.isAgreePact')
-  // const checkUpdate = useDispatch('common', 'checkUpdate')
-  const [time, setTime] = useState(20)
+  const [time, setTime] = useState(7)
 
-  const handleRejct = () => {
+  const handleReject = () => {
     exitApp()
-    // Navigation.dismissOverlay(componentId)
   }
 
   const handleConfirm = () => {
@@ -134,7 +139,7 @@ const Footer = ({ componentId }: { componentId: string }) => {
         isAgreePact
           ? null
           : (
-              <Text selectable style={styles.tip} size={13}>若你（使用者）接受以上协议，请点击下面的“接受”按钮签署本协议；若不接受，请点击“不接受”后退出软件并清除本软件的所有数据。</Text>
+              <Text selectable style={styles.tip} size={13}>若你（使用者）接受以上协议，请点击下面的"接受"按钮签署本协议；若不接受，请点击"不接受"后退出软件并清除本软件的所有数据。</Text>
             )
       }
       <View style={styles.btns}>
@@ -142,7 +147,7 @@ const Footer = ({ componentId }: { componentId: string }) => {
           isAgreePact
             ? null
             : (
-                <Button style={{ ...styles.btn, backgroundColor: theme['c-button-background'] }} onPress={handleRejct}>
+                <Button style={{ ...styles.btn, backgroundColor: theme['c-button-background'] }} onPress={handleReject}>
                   <Text color={theme['c-button-font']}>不接受</Text>
                 </Button>
               )
@@ -166,7 +171,6 @@ const PactModal = ({ componentId }: { componentId: string }) => {
 
 const styles = createStyle({
   main: {
-    // flexGrow: 0,
     flexShrink: 1,
     marginTop: 15,
     marginBottom: 10,
@@ -207,7 +211,6 @@ const styles = createStyle({
     justifyContent: 'center',
     paddingBottom: 15,
     paddingLeft: 15,
-    // paddingRight: 15,
   },
   btn: {
     flex: 1,
@@ -222,4 +225,3 @@ const styles = createStyle({
 })
 
 export default PactModal
-

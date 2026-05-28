@@ -26,19 +26,30 @@ export default () => {
       songlistInfo.current.tagId = info.tagId
       headerBarRef.current?.setSource(info.source, info.sortId, info.tagName, info.tagId)
       listRef.current?.loadList(info.source, info.sortId, info.tagId)
+      // 通知 TagList 加载标签
+      global.app_event.showSonglistTagList(info.source, info.tagId)
     })
+  }, [])
+
+  // 监听标签变更事件（从左侧常驻 TagList 发出）
+  useEffect(() => {
+    const handleTagChange = (name: string, id: string) => {
+      songlistInfo.current.tagId = id
+      void saveSongListSetting({ tagName: name, tagId: id })
+      listRef.current?.loadList(songlistInfo.current.source, songlistInfo.current.sortId, id)
+      // 同步 TagList 的选中状态
+      global.app_event.showSonglistTagList(songlistInfo.current.source, id)
+    }
+    global.app_event.on('songlistTagInfoChange', handleTagChange)
+    return () => {
+      global.app_event.off('songlistTagInfoChange', handleTagChange)
+    }
   }, [])
 
   const handleSortChange: HeaderBarProps['onSortChange'] = (id) => {
     songlistInfo.current.sortId = id
     void saveSongListSetting({ sortId: id })
     listRef.current?.loadList(songlistInfo.current.source, id, songlistInfo.current.tagId)
-  }
-
-  const handleTagChange: HeaderBarProps['onTagChange'] = (name, id) => {
-    songlistInfo.current.tagId = id
-    void saveSongListSetting({ tagName: name, tagId: id })
-    listRef.current?.loadList(songlistInfo.current.source, songlistInfo.current.sortId, id)
   }
 
   const handleSourceChange: HeaderBarProps['onSourceChange'] = (source) => {
@@ -48,6 +59,8 @@ export default () => {
     void saveSongListSetting({ sortId: songlistInfo.current.sortId, source, tagId: '', tagName: '' })
     headerBarRef.current?.setSource(source, songlistInfo.current.sortId, '', songlistInfo.current.tagId)
     listRef.current?.loadList(source, songlistInfo.current.sortId, songlistInfo.current.tagId)
+    // 通知 TagList 刷新标签
+    global.app_event.showSonglistTagList(source, '')
   }
 
   return (
@@ -55,7 +68,6 @@ export default () => {
       <HeaderBar
         ref={headerBarRef}
         onSortChange={handleSortChange}
-        onTagChange={handleTagChange}
         onSourceChange={handleSourceChange}
       />
       <List ref={listRef} />
@@ -69,4 +81,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 })
-

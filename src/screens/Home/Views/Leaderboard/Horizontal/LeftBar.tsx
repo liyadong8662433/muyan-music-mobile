@@ -68,8 +68,8 @@ export default forwardRef<LeftBarType, LeftBarProps>(({ onChangeList }, ref) => 
 
   return (
     <View style={{ ...styles.container, borderRightColor: theme['c-list-header-border-bottom'] }}>
-      <View style={styles.selector}>
-        <SourceSelector ref={sourceSelectorRef} onSourceChange={onSourceChange} />
+      <View style={{ ...styles.selector, marginTop: 10 }}>
+        <SourceSelector ref={sourceSelectorRef} onSourceChange={onSourceChange} fontSize={18} paddingVertical={17} />
       </View>
       <BoardsList
         ref={boardsListRef}

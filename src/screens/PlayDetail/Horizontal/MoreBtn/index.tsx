@@ -1,14 +1,14 @@
 import { createStyle } from '@/utils/tools'
 import { View } from 'react-native'
 import PlayModeBtn from './PlayModeBtn'
-import MusicAddBtn from './MusicAddBtn'
-import TimeoutExitBtn from './TimeoutExitBtn'
+import PlaylistBtn from './PlaylistBtn'
+import LoveListBtn from './LoveListBtn'
 
 export default () => {
   return (
     <View style={styles.container}>
-      <TimeoutExitBtn />
-      <MusicAddBtn />
+      <PlaylistBtn />
+      <LoveListBtn />
       <PlayModeBtn />
     </View>
   )
@@ -26,6 +26,7 @@ const styles = createStyle({
     position: 'absolute',
     height: '100%',
     left: 0,
+    top: 80,
     gap: 16,
     zIndex: 1,
   },

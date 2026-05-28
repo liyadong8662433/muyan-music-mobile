@@ -34,8 +34,8 @@ export default forwardRef<CurrentTagBtnType, CurrentTagBtnProps>(({ onShowList }
 
 const styles = createStyle({
   btn: {
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingLeft: 6,
+    paddingRight: 6,
     justifyContent: 'center',
   },
   sourceMenu: {

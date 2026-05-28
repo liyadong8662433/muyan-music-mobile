@@ -26,7 +26,7 @@ const ListItem = ({ keyword, onSearch }: {
   const theme = useTheme()
   return (
     <Button style={{ ...styles.button, backgroundColor: theme['c-button-background'] }} onPress={() => { onSearch(keyword) }}>
-      <Text color={theme['c-button-font']} size={13}>{keyword}</Text>
+      <Text color={theme['c-font']} size={16}>{keyword}</Text>
     </Button>
   )
 }
@@ -36,7 +36,7 @@ export default forwardRef<HotSearchType, ListProps>((props, ref) => {
   // const listRef = useRef<MusicListType>(null)
   const [list, setList] = useState<List>([])
   const t = useI18n()
-  // const theme = useTheme()
+  const theme = useTheme()
 
   const isUnmountedRef = useRef(false)
   useEffect(() => {
@@ -59,7 +59,7 @@ export default forwardRef<HotSearchType, ListProps>((props, ref) => {
     list.length
       ? (
           <ScrollView>
-            <Text style={styles.title} size={16}>{t('search_hot_search')}</Text>
+            <Text style={styles.title} size={16} color={theme['c-font']}>{t('search_hot_search')}</Text>
             <View style={styles.list}>
               {
                 list.map(keyword => <ListItem keyword={keyword} key={keyword} onSearch={props.onSearch} />)

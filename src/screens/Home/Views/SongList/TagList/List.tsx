@@ -55,15 +55,17 @@ export default forwardRef<ListType, ListProps>(({ onTagChange }, ref) => {
     <ScrollView style={{ flexShrink: 1, flexGrow: 0 }} keyboardShouldPersistTaps={'always'}>
       <View style={styles.tagContainer} onStartShouldSetResponder={() => true}>
         {
-          list.map((type, index) => (
-            <TagGroup
-              key={index}
-              name={type.name}
-              list={type.list}
-              activeId={activeId}
-              onTagChange={onTagChange}
-            />
-          ))
+          list
+            .filter(type => type.name !== '') // 隐藏"默认"标签分组
+            .map((type, index) => (
+              <TagGroup
+                key={index}
+                name={type.name}
+                list={type.list}
+                activeId={activeId}
+                onTagChange={onTagChange}
+              />
+            ))
         }
         {
           list.length == 1
@@ -82,9 +84,9 @@ export default forwardRef<ListType, ListProps>(({ onTagChange }, ref) => {
 
 const styles = createStyle({
   tagContainer: {
-    paddingTop: 15,
-    paddingLeft: 15,
-    paddingBottom: 15,
+    paddingTop: 2,
+    paddingLeft: 6,
+    paddingBottom: 10,
   },
   blankView: {
     paddingTop: '15%',

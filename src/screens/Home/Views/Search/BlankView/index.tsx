@@ -18,8 +18,6 @@ export interface BlankViewType {
 }
 
 export default forwardRef<BlankViewType, BlankViewProps>(({ onSearch }, ref) => {
-  // const [listType, setListType] = useState<SearchState['searchType']>('music')
-  const [visible, setVisible] = useState(false)
   const hotSearchRef = useRef<HotSearchType>(null)
   const historySearchRef = useRef<HistorySearchType>(null)
   const isShowHotSearch = useSettingValue('search.isShowHotSearch')
@@ -27,41 +25,28 @@ export default forwardRef<BlankViewType, BlankViewProps>(({ onSearch }, ref) => 
   const t = useI18n()
   const theme = useTheme()
 
-  const handleShow = (source: Source) => {
-    hotSearchRef.current?.show(source)
-    historySearchRef.current?.show()
-  }
-
   useImperativeHandle(ref, () => ({
     show(source) {
-      if (visible) handleShow(source)
-      else {
-        setVisible(true)
-        requestAnimationFrame(() => {
-          handleShow(source)
-        })
-      }
+      hotSearchRef.current?.show(source)
+      historySearchRef.current?.show()
     },
-  }), [visible])
+  }), [])
+
+  if (!isShowHotSearch && !isShowHistorySearch) {
+    return (
+      <View style={styles.welcome}>
+        <Text size={22} color={theme['c-font-label']}>{t('search__welcome')}</Text>
+      </View>
+    )
+  }
 
   return (
-    visible
-      ? isShowHotSearch || isShowHistorySearch
-        ? (
-            <ScrollView>
-              <View style={styles.content}>
-                { isShowHotSearch ? <HotSearch ref={hotSearchRef} onSearch={onSearch} /> : null }
-                { isShowHistorySearch ? <HistorySearch ref={historySearchRef} onSearch={onSearch} /> : null }
-              </View>
-            </ScrollView>
-          )
-        : (
-            <View style={styles.welcome}>
-              <Text size={22} color={theme['c-font-label']}>{t('search__welcome')}</Text>
-            </View>
-          )
-      : null
-
+    <ScrollView>
+      <View style={styles.content}>
+        { isShowHotSearch ? <HotSearch ref={hotSearchRef} onSearch={onSearch} /> : null }
+        { isShowHistorySearch ? <HistorySearch ref={historySearchRef} onSearch={onSearch} /> : null }
+      </View>
+    </ScrollView>
   )
 })
 
