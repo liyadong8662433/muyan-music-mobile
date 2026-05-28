@@ -1,4 +1,4 @@
-<p align="center"><img width="200" src="assets/images/logo_icon.png" alt="沐妍MUSIC"></p>
+<p align="center"><img width="200" src="assets/images/logo_nav.png" alt="沐妍MUSIC"></p>
 
 <h1 align="center">沐妍MUSIC 移动版</h1>
 
