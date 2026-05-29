@@ -224,7 +224,7 @@ export const getListDetailPage = async(source: LX.OnlineSource, id: string, page
  * @returns
  */
 export const getListDetailAll = async(source: LX.OnlineSource, id: string, isRefresh = false): Promise<LX.Music.MusicInfoOnline[]> => {
-  // console.log(tabId)
+  console.log(`[getListDetailAll] start source=${source} id=${id}`)
   const listKey = `sdetail__${source}__${id}`
   let listCache = cache.get(listKey) as LimitDetailCache
   if (!listCache || isRefresh) {
@@ -238,12 +238,21 @@ export const getListDetailAll = async(source: LX.OnlineSource, id: string, isRef
     return getListDetailLimit(source, id, page)
   }
   return loadData(1).then(async result => {
+    console.log(`[getListDetailAll] page1 ok total=${result.total} songs=${result.list?.length}`)
     if (result.total <= result.limit) return result.list
 
     let maxPage = Math.ceil(result.total / result.limit)
-    // 并行加载所有页面（跳过第1页，因为它已包含在result中）
+    console.log(`[getListDetailAll] loading pages 2..${maxPage}`)
     const pages = Array.from({ length: maxPage - 1 }, (_, i) => loadData(i + 2))
     const pageResults = await Promise.all(pages)
+    console.log(`[getListDetailAll] all pages loaded, merging`)
     return [...result.list, ...pageResults.flatMap(r => r.list)]
-  }).then(list => deduplicationList(list))
+  }).then(list => {
+    const deduped = deduplicationList(list)
+    console.log(`[getListDetailAll] done id=${id} total=${list.length} after-dedup=${deduped.length}`)
+    return deduped
+  }).catch(err => {
+    console.error(`[getListDetailAll] FAILED id=${id}:`, err?.message || err)
+    throw err
+  })
 }

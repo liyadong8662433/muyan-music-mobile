@@ -193,7 +193,9 @@ export default () => {
     if (!recommend?.rawSongs?.length) return
     if (isInForYouMode) {
       // 已在猜你喜欢模式：播放卡片上显示的下一首歌
-      const nextIndex = (playInfo.playerPlayIndex + 1) % recommend.rawSongs.length
+      const tempList = getList(LIST_IDS.TEMP) as any[]
+      const listLen = tempList.length || recommend.rawSongs.length
+      const nextIndex = (playInfo.playerPlayIndex + 1) % listLen
       void playList(LIST_IDS.TEMP, nextIndex)
     } else {
       // 首次点击：将所有推荐歌曲放入 TEMP 列表，从第一首开始播放

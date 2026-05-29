@@ -1,4 +1,5 @@
 import { getListDetailAll } from '@/core/songlist'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export interface RecommendSong {
   name: string
@@ -24,6 +25,8 @@ const BUILTIN_PLAYLIST_IDS = [
   '9719465952',
   '9657218269',
 ]
+
+const STORAGE_KEY = '@recommend_cache'
 
 let cache: DailyRecommend | null = null
 
@@ -68,6 +71,29 @@ const withRetry = async <T>(fn: () => Promise<T>, maxRetries = 2): Promise<T> =>
   throw lastErr
 }
 
+/**
+ * 保存缓存到 AsyncStorage（持久化兜底）
+ */
+const saveCacheToStorage = async (data: DailyRecommend) => {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch {}
+}
+
+/**
+ * 从 AsyncStorage 加载上次成功的缓存
+ */
+const loadCacheFromStorage = async (): Promise<DailyRecommend | null> => {
+  try {
+    const json = await AsyncStorage.getItem(STORAGE_KEY)
+    if (json) {
+      const data = JSON.parse(json) as DailyRecommend
+      if (data.rawSongs?.length) return data
+    }
+  } catch {}
+  return null
+}
+
 export const getDailyRecommend = async (): Promise<DailyRecommend> => {
   const today = getTodayStr()
 
@@ -83,44 +109,83 @@ export const getDailyRecommend = async (): Promise<DailyRecommend> => {
       )
     )
 
-    // 2. 合并所有歌单的歌曲
+    // 2. 合并所有歌单的歌曲，按 id (tx_songmid) 去重（toNewMusicInfo 后 songmid 在 id 和 meta.songId）
+    const seen = new Set<string>()
     const allSongs: any[] = []
     results.forEach(result => {
       if (result.status === 'fulfilled' && result.value?.length) {
-        allSongs.push(...result.value)
+        for (const song of result.value) {
+          const key = song.id || song.meta?.songId || song.songmid || String(song.songId || '')
+          if (key && !seen.has(key)) {
+            seen.add(key)
+            allSongs.push(song)
+          }
+        }
       }
     })
+    console.log('[recommend] allSongs final length:', allSongs.length, 'seen size:', seen.size)
 
     if (!allSongs.length) {
+      // 网络失败：优先内存缓存，其次 AsyncStorage 兜底
       if (cache) return cache
+      const stored = await loadCacheFromStorage()
+      if (stored) {
+        console.log('[recommend] API 全部失败，使用本地缓存')
+        cache = stored
+        return stored
+      }
       throw new Error('Failed to fetch any playlist detail')
     }
 
     // 3. 随机打乱，每次获得不同的推荐顺序
     const shuffled = shuffleArray(allSongs)
 
-    const firstSong = shuffled[0] as any
+    // 找到第一首有有效封面的歌
+    const firstValidSong = shuffled.find((s: any) => {
+      const pic = s.meta?.picUrl || s.img
+      return pic && !pic.includes('M000.')
+    }) || shuffled[0]
+    const firstSong = firstValidSong as any
+
+    const coverPic = (firstSong.meta?.picUrl || firstSong.img || '') as string
+    // 过滤掉无效 URL（例如缺少 mid 导致 M000.jpg 的 404 链接）
+    const validPic = coverPic && !coverPic.includes('M000.') ? coverPic : ''
+    const mid = firstSong.id?.replace('tx_', '') || firstSong.meta?.songId || ''
+
     const song: RecommendSong = {
       name: firstSong.name || '',
       singer: firstSong.singer || '',
-      img: firstSong.img || '',
-      songmid: firstSong.songmid || String(firstSong.songId || ''),
+      img: validPic,
+      songmid: mid,
       source: 'tx',
     }
+
+    // playlistCover 也用第一首歌的封面
+    const playlistCover = validPic
 
     cache = {
       date: today,
       playlistName: '猜你喜欢',
-      playlistCover: firstSong.img || '',
+      playlistCover,
       song,
       rawSong: firstSong,
       rawSongs: shuffled,
     }
 
+    // 成功拉取后持久化到 AsyncStorage
+    saveCacheToStorage(cache)
+
     return cache
   } catch (err) {
     console.warn('[recommend] fetch failed:', err)
     if (cache) return cache
+    // 最后兜底：尝试加载 AsyncStorage 缓存
+    const stored = await loadCacheFromStorage()
+    if (stored) {
+      console.log('[recommend] 加载本地缓存作为兜底')
+      cache = stored
+      return stored
+    }
     throw err
   }
 }

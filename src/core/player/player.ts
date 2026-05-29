@@ -369,6 +369,8 @@ export const getNextPlayMusicInfo = async(): Promise<LX.Player.PlayMusicInfo | n
   let nextIndex = playerIndex
 
   let togglePlayMethod = settingState.setting['player.togglePlayMethod']
+  // TEMP 列表（猜你喜欢）已预 shuffle，强制顺序播放避免随机重复
+  if (currentListId === LIST_IDS.TEMP) togglePlayMethod = 'listLoop'
   switch (togglePlayMethod) {
     case 'listLoop':
       nextIndex = playerIndex === filteredList.length - 1 ? 0 : playerIndex + 1
@@ -471,6 +473,8 @@ export const playNext = async(isAutoToggle = false): Promise<void> => {
   let nextIndex = playerIndex
 
   let togglePlayMethod = settingState.setting['player.togglePlayMethod']
+  // TEMP 列表（猜你喜欢）已预 shuffle，强制顺序播放避免随机重复
+  if (currentListId === LIST_IDS.TEMP) togglePlayMethod = 'listLoop'
   if (!isAutoToggle) {
     switch (togglePlayMethod) {
       case 'list':

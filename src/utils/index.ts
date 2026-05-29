@@ -66,6 +66,7 @@ export const toNewMusicInfo = (oldMusicInfo: any): LX.Music.MusicInfo => {
         meta.strMediaMid = oldMusicInfo.strMediaMid
         meta.albumMid = oldMusicInfo.albumMid
         meta.id = oldMusicInfo.songId
+        meta.pay_play = oldMusicInfo.pay_play ?? 0
         break
       case 'mg':
         meta.copyrightId = oldMusicInfo.copyrightId
