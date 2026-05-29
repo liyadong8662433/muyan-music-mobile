@@ -21,7 +21,7 @@ export interface DailyRecommend {
 
 /** 内置固定歌单 ID 列表，始终从所有歌单随机挑选歌曲，可随时增减 */
 const BUILTIN_PLAYLIST_IDS = [
-  '1831586379',
+  '9719465952',
   '9657218269',
 ]
 
